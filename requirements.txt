@@ -1,6 +1,6 @@
 ﻿astroid==2.3.1
 colorama==0.4.1
-Django==2.2.6
+Django==2.2.8
 gcloud==0.17.0
 googleapis-common-protos==1.6.0
 httplib2==0.14.0
@@ -18,7 +18,7 @@ pylint==2.4.2
 Pyrebase==3.0.27
 python-jwt==2.0.1
 pytz==2019.3
-requests==2.11.1
+requests==2.20.0
 requests-toolbelt==0.7.0
 rsa==4.0
 six==1.12.0
