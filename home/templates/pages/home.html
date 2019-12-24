@@ -182,7 +182,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!-- //banner -->
 
 <!---News--->
-<div class="flex-container">
+
+<!---div class="flex-container">
   {% for post in post %}
     <div>
 		{{ post.date }}
@@ -191,7 +192,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	<br/>
 	</div>
 	{% endfor %}
-</div>
+</!---div>
+
 <div class="pagination">
     <span class="step-links">
         {% if contacts.has_previous %}
