@@ -9,9 +9,9 @@ from blog.models import Post
 def index(request):
     form = CreationForm()
     post= Post.objects.all().order_by("-date")
-    paginator = Paginator(post,4)
-    page = request.GET.get('page')
-    contacts = paginator.get_page(page)
+    #paginator = Paginator(post,4)
+    #page = request.GET.get('page')
+    #contacts = paginator.get_page(page)
     if request.method == 'POST':
         form = CreationForm(request.POST)
         alert=False
