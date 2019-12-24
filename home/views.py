@@ -18,9 +18,9 @@ def index(request):
         if form.is_valid():
             form.save()
             alert=True
-            return render(request, 'pages/home.html',{'alert':alert,'post':contacts})
+            return render(request, 'pages/home.html',{'alert':alert})#,'post':contacts})
         return HttpResponse("Dữ liệu không hợp lệ")
-    return render(request, 'pages/home.html', {'form':form, 'post':contacts})
+    return render(request, 'pages/home.html', {'form':form})#, 'post':contacts})
 def contact(request):
     return render(request, 'pages/contact.html')
 def error(request):
