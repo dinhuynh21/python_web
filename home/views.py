@@ -9,18 +9,18 @@ from blog.models import Post
 def index(request):
     form = CreationForm()
     post= Post.objects.all().order_by("-date")
-    #paginator = Paginator(post,4)
-    #page = request.GET.get('page')
-    #contacts = paginator.get_page(page)
+    paginator = Paginator(post,4)
+    page = request.GET.get('page')
+    contacts = paginator.get_page(page)
     if request.method == 'POST':
         form = CreationForm(request.POST)
         alert=False
         if form.is_valid():
             form.save()
             alert=True
-            return render(request, 'pages/home.html',{'alert':alert})#,'post':contacts})
+            return render(request, 'pages/home.html',{'alert':alert,'post':contacts})
         return HttpResponse("Dữ liệu không hợp lệ")
-    return render(request, 'pages/home.html', {'form':form})#, 'post':contacts})
+    return render(request, 'pages/home.html', {'form':form, 'post':contacts})
 def contact(request):
     return render(request, 'pages/contact.html')
 def error(request):
