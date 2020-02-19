@@ -1,6 +1,6 @@
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponse
-from .models import Student,Class
+from student.models import Student,Class,StudentInClass
 from .forms import CreationForm,TimeStudentForm
 from django.views.generic import ListView, DetailView
 # Create your views here.
@@ -12,10 +12,12 @@ class StudentListView(ListView):
 #class StudentDetailView(DetailView): # Trang info student
    # model = Student
    # template_name = 'student/detailStudent.html'
-def TimeFallStudent(request,pk):
-    student= get_object_or_404(Student,pk)
-    form = TimeStudentForm()
-    return render(request, 'student/detailStudent.html', {'student':student, 'form':form} )
+def DetailStudent(request,pk):
+    student = get_object_or_404(Student,pk=pk) # chỉ định tham số pk 
+    
+    #form = TimeStudentForm()
+    return render(request, 'student/detailStudent.html', {'student':student,} )
+
 def CreateStudent(request):
     form = CreationForm()
     if request.method == 'POST':
