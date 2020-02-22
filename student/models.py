@@ -82,7 +82,7 @@ class Class(models.Model):
     name = models.CharField(max_length=100, blank=True)
     teacher = models.ForeignKey(Teacher,on_delete=models.CASCADE,related_name='teachers')
     area = models.ForeignKey(Area,on_delete=models.CASCADE,related_name='areas')
-    level = models.ForeignKey(SystemLevel,on_delete=models.CASCADE,related_name='systemlevels')
+    level = models.ForeignKey(SystemLevel,on_delete=models.CASCADE,related_name='levels')
     members = models.ManyToManyField(Student, through='StudentInClass')
     #numberOfStudent=models.IntegerField(default=0) # khong nen xai bien nay ???
     room = models.CharField(max_length=20)
@@ -92,15 +92,37 @@ class Class(models.Model):
     note = models.TextField(max_length=200,default='',blank=True)
     def __str__(self):
         return self.name
-
-    def level_name(self):
+        #return "%s %s" % (self.shift, self.start_date)
+    def _level_name(self):
         return self.level
     def course_date(self):
         return "%s %s" % (self.start_date,self.end_date)
+    course_date.short_description='Course date' # phương thức hiển thị cho def này  
     def save(self, *args, **kwargs):
         self.name = self.level.name + " " + self.teacher.name + " ca " + format(self.shift)
+        #self.name = self.level.name
         super().save(*args, **kwargs)
 
+class Fee(models.Model):
+    student = models.ForeignKey(Student,on_delete=models.CASCADE)
+    class_id = models.ForeignKey(Class,on_delete=models.CASCADE,related_name='classer')
+    level = models.CharField(max_length=50,blank=True) 
+    course_date = models.CharField(max_length=50,blank=True)
+    fee = models.IntegerField(default=0)
+    receipt_number = models.IntegerField()
+    payment_date = models.DateField(auto_now_add=True,)
+    note = models.TextField(max_length=100,default='',blank=True)
+
+    def __str__(self):
+        return "%s %s" %(self.receipt_number,self.payment_date)
+
+    def save(self, *args, **kwargs):
+        #if self.level == None:
+            self.level = self.class_id.name
+            #self.course_date = self.class_id._level_name #+ " " + self.class_id.to_fields.end_date
+            super().save(*args, **kwargs)
+        #else:
+            #super().save(*args, **kwargs)
 class StudentInClass(models.Model):
     student=models.ForeignKey(Student,on_delete=models.CASCADE)
     class_id=models.ForeignKey(Class,on_delete=models.CASCADE)
@@ -142,22 +164,7 @@ class StudentInClass(models.Model):
 #     def __str__(self):
 #         return self.student
 
-class Fee(models.Model):
-    student = models.ForeignKey(Student,on_delete=models.CASCADE)
-    class_id = models.ForeignKey(Class,on_delete=models.CASCADE,related_name='classer')
-    level = models.CharField(max_length=50,blank=True) 
-    course_date = models.CharField(max_length=50,blank=True)
-    fee = models.IntegerField(default=0)
-    receipt_number = models.IntegerField()
-    payment_date = models.DateField(auto_now_add=True,)
-    note = models.TextField(max_length=100,default='',blank=True)
 
-    def __str__(self):
-        return '%s %s' %(self.student,self.receipt_number)
-    def save(self, *args, **kwargs):
-        #self.level = self.class_id.level_name
-        #self.course_date = self.class_id.start_date + " " + self.class_id.end_date
-        super().save(*args, **kwargs)
 
 
 # class Position(models.Model):
