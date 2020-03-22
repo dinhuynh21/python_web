@@ -1,6 +1,6 @@
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponse
-from student.models import Student,Class,StudentInClass
+from student.models import Student,Classes,StudentInClass
 from .forms import CreationForm,TimeStudentForm
 from django.views.generic import ListView, DetailView
 # Create your views here.

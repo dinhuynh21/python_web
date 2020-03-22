@@ -1,6 +1,6 @@
 from django import forms
 import re
-from .models import Student,Class,StudentInClass
+from .models import Student,Classes,StudentInClass,MyUser
 class CreationForm(forms.ModelForm):
     #name =forms.CharField(label='',widget=forms.TextInput(attrs={"placeholder":"Tên học sinh "}))
     #birtday=forms.DateField(widget=forms.DateInput(attrs={"placeholder":"Ngày sinh"}))
