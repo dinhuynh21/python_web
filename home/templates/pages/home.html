@@ -56,9 +56,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 {% load staticfiles %}
 
 {% if alert %}
-<script>
-	alert('Đăng kí thành công, nhân viên của chúng tôi sẻ sớm liên lạc với bạn !!!')
-</script>
+	<script>
+		alert('Đăng kí thành công, nhân viên của chúng tôi sẻ sớm liên lạc với bạn !!!')
+	</script>
 {% else %}
 {% endif %}
 <header>
@@ -164,7 +164,12 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 								<h5 class="mb-3">Register and Join in our school</h5>
 								<div class="form-style-w3ls">								
 									<input placeholder="Student Name" name="name" type="text" required="">
-									<input placeholder="Contact Number" name="phonenum1" type="text" required="">
+									<input placeholder="Contact Number" name="phone_number_1" type="text" required="">
+									<select name=learning_area required_id = "id_learning_area" >
+										{% for area in area %}
+											<option value={{area.id}}>{{ area.name }}</option>
+										{% endfor %}
+									</select>
 									
 									<!--<input placeholder="Password" name="password" type="password" required=""> -->
 									<button Class="btn" > Get Started</button>
@@ -211,7 +216,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
         {% endif %}
     </span>
 </div>
-<!---//News--->
+</!---News--->
 
 <!-- what we Serve -->
 <section class="banner-bottom py-5" id="about">

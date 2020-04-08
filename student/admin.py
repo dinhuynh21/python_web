@@ -9,6 +9,8 @@ from django.utils.safestring import mark_safe
 # Register your models here.
 class StudentInLine(admin.TabularInline):
     model=StudentInClass # model hỗ trợ
+    verbose_name=''
+    verbose_name_plural = 'Học sinh/ Lớp học'
     #fields=['student','class_id']
     def get_extra(self, request, obj=None, **kwargs):# hàm giới hạn lượng obj "trống" ở [inline]
         extra = 1
@@ -16,12 +18,14 @@ class StudentInLine(admin.TabularInline):
         #     return extra - obj.StudentInClass_set.count() # không rõ là cái gì :V
         return extra
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        user=MyUser.objects.get(user=request.user) # Lấy MyUser theo user đang có
         if db_field.name == "class_id":  #dòng này có vấn đề
             #Có lỗi nhưng nó vẫn chạy tốt :V méo hiểu kệ nó 
             # Fix 1: Import thêm pylint vào project sau đó vào settings.json(Python) import thêm 1 đoạn code gọi plugin pylint là dc 
-            a=MyUser.objects.get(user=request.user) # Lấy MyUser theo user đang có
             # Lọc theo khu vực của User
-            kwargs["queryset"] = Classes.objects.filter(area=a.area) # Student.objects.filler() thì k sao vì model có Manage()
+            kwargs["queryset"] = Classes.objects.filter(area=user.area) # Student.objects.filler() thì k sao vì model có Manage()
+        if db_field.name=="student":
+            kwargs["queryset"] = Student.objects.filter(learning_area=user.area)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 # More infomation to User in admin
@@ -39,6 +43,7 @@ class FeeInLine(admin.TabularInline):
     model=Fee
     extra=1  
     fields=['student','class_id','level','course_date','fee','receipt_number']
+    can_delete=False
     verbose_name='Phiếu thu'
     verbose_name_plural = 'Học phí'
 
@@ -51,10 +56,10 @@ class StudentAdmin(admin.ModelAdmin): # danh sách học sính
     list_display=['name', 'phone_number_1','joined_date'] # danh sách hiển thị, có thể nhóm các thuộc tính 
     search_fields=['name','phone_number_1'] # Thanh tìm kiếm ['foreign_key__related_fieldname']
     #fields= [('birtdate','address')] # chọn trường hiển thị và gộp nhóm (fail)
-    list_filter=[('learning_area', admin.RelatedOnlyFieldListFilter)]# phần màu cam là lọc theo 'tên_thuộc_tính', phần màu trắng thì k rõ :V
+    #list_filter=[('learning_area', admin.RelatedOnlyFieldListFilter)]# phần màu cam là lọc theo 'tên_thuộc_tính', phần màu trắng thì k rõ :V
     list_per_page = 30
     ordering = ['name'] # sắp xếp
-    paginator= 15
+    #paginator= 15
 
     inlines=[StudentInLine,FeeInLine] # Thêm 1 inline obj
     #exclude =['name']  #loại trừ thuộc tính ('name') 
@@ -62,6 +67,22 @@ class StudentAdmin(admin.ModelAdmin): # danh sách học sính
     #raw_id_fields = ["learning_area",] # chuyễn về dạng id của field learning_area (xấu)
     #radio_fields = {"learning_area": admin.VERTICAL}# đổi từ list choose sang chọn A B C theo số lượng có của FK
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        myuser=MyUser.objects.get(user=request.user)
+        if request.user.is_superuser:
+            list_filter=['learning_area']
+            return qs
+        return qs.filter(learning_area=myuser.area)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if request.user.is_superuser:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        else:   
+            if db_field.name == "learning_area":
+                user = MyUser.objects.get(user=request.user)
+                kwargs["queryset"]= Area.objects.filter(name=user.area)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
     # readonly_fields = ('address_report',)
     # def address_report(self, instance):
     #     # assuming get_full_address() returns a list of strings
@@ -95,15 +116,52 @@ class SystemLevelAdmin(admin.ModelAdmin):# Danh sách level
 class TeacherAdmin(admin.ModelAdmin):# danh sách giáo viên
     list_display=['name','email']
     search_fields=['name','phone_number','email']
-    list_filter = ['area']
+    #list_filter = ['area']
     ordering = ['name']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        myuser=MyUser.objects.get(user=request.user)
+        if request.user.is_superuser:
+            list_filter=['area']
+            return qs
+        return qs.filter(area=myuser.area)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if request.user.is_superuser:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        else:   
+            user = MyUser.objects.get(user=request.user)
+            if db_field.name == "area":
+                kwargs["queryset"]= Area.objects.filter(name=user.area)
+            #if db_field.name == "area":
+                #kwargs["queryset"]= Area.objects.filter(name=user.area)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ClassAdmin(admin.ModelAdmin): #Danh sách lớp
     list_display=['name','area','start_date','end_date']
     search_fields=['name']
-    list_filter=['shift','area']
+    #user = MyUser.objects.get(user=request.user)
     inlines=[StudentInLine]
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        myuser=MyUser.objects.get(user=request.user)
+        if request.user.is_superuser:
+            list_filter=['shift','area']
+            return qs
+        return qs.filter(area=myuser.area)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if request.user.is_superuser:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        else:   
+            user = MyUser.objects.get(user=request.user)
+            if db_field.name == "teacher":
+                kwargs["queryset"]= Teacher.objects.filter(area=user.area)
+            if db_field.name == "area":
+                kwargs["queryset"]= Area.objects.filter(name=user.area)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 class CambridgeLevelAdmin(admin.ModelAdmin):# Danh sách Level Cambridge
     list_display=['name','fee','note']
     search_fields=['name']
@@ -113,6 +171,24 @@ class FeeAdmin(admin.ModelAdmin): # Danh sách thu học phí theo biên lai
     app_label="học phí"
     search_fields=['receipt_number','student__name','payment_date'] # Gọi API ['(foreign_key)__(related_fieldname)'] thực tế là ['foreign_key__related_fieldname']
     
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        myuser=MyUser.objects.get(user=request.user)
+        #class_id=Classes.objects.get(self)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(class_id__area = myuser.area)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if request.user.is_superuser:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        else:   
+            user = MyUser.objects.get(user=request.user)
+            if db_field.name == "student":
+                kwargs["queryset"]= Student.objects.filter(learning_area=user.area)
+            if db_field.name == "class_id":
+                kwargs["queryset"]= Classes.objects.filter(area=user.area)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 # Untake User default
 admin.site.unregister(User)
 # Đưa cái đã tạo lên Admin site
