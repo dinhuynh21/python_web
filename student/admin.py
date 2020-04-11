@@ -12,12 +12,14 @@ class StudentInLine(admin.TabularInline):
     verbose_name=''
     verbose_name_plural = 'Học sinh/ Lớp học'
     #fields=['student','class_id']
-    def get_extra(self, request, obj=None, **kwargs):# hàm giới hạn lượng obj "trống" ở [inline]
+    def get_extra(self, request, obj=None, **kwargs):
+        """ hàm giới hạn lượng obj "trống" ở [inline]"""
         extra = 1
         # if obj:
         #     return extra - obj.StudentInClass_set.count() # không rõ là cái gì :V
         return extra
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
         user=MyUser.objects.get(user=request.user) # Lấy MyUser theo user đang có
         if db_field.name == "class_id":  #dòng này có vấn đề
             #Có lỗi nhưng nó vẫn chạy tốt :V méo hiểu kệ nó 
@@ -48,6 +50,7 @@ class FeeInLine(admin.TabularInline):
     verbose_name_plural = 'Học phí'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
         if db_field.name == "class_id":
             user = MyUser.objects.get(user=request.user)
             kwargs["queryset"]= Classes.objects.filter(area=user.area)
@@ -68,14 +71,17 @@ class StudentAdmin(admin.ModelAdmin): # danh sách học sính
     #radio_fields = {"learning_area": admin.VERTICAL}# đổi từ list choose sang chọn A B C theo số lượng có của FK
 
     def get_queryset(self, request):
+        """ Lọc toàn bộ obj theo area của user """
         qs = super().get_queryset(request)
-        myuser=MyUser.objects.get(user=request.user)
         if request.user.is_superuser:
             list_filter=['learning_area']
             return qs
-        return qs.filter(learning_area=myuser.area)
+        else:
+            myuser=MyUser.objects.get(user=request.user)
+            return qs.filter(learning_area=myuser.area)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
         if request.user.is_superuser:
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
         else:   
@@ -112,6 +118,17 @@ class SystemLevelAdmin(admin.ModelAdmin):# Danh sách level
     list_display=['name','fee','note']
     search_fields=['name']
     ordering = ['name']
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
+        if request.user.is_superuser:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        else:   
+            user = MyUser.objects.get(user=request.user)
+            if db_field.name == "area":
+                kwargs["queryset"]= Area.objects.filter(name=user.area)
+            #if db_field.name == "area":
+                #kwargs["queryset"]= Area.objects.filter(name=user.area)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class TeacherAdmin(admin.ModelAdmin):# danh sách giáo viên
     list_display=['name','email']
@@ -120,14 +137,17 @@ class TeacherAdmin(admin.ModelAdmin):# danh sách giáo viên
     ordering = ['name']
 
     def get_queryset(self, request):
+        """ Lọc toàn bộ obj theo area của user """
         qs = super().get_queryset(request)
-        myuser=MyUser.objects.get(user=request.user)
         if request.user.is_superuser:
             list_filter=['area']
             return qs
-        return qs.filter(area=myuser.area)
+        else:
+            myuser=MyUser.objects.get(user=request.user)
+            return qs.filter(area=myuser.area)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
         if request.user.is_superuser:
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
         else:   
@@ -145,14 +165,17 @@ class ClassAdmin(admin.ModelAdmin): #Danh sách lớp
     inlines=[StudentInLine]
 
     def get_queryset(self, request):
+        """ Lọc toàn bộ obj theo area của user """
         qs = super().get_queryset(request)
-        myuser=MyUser.objects.get(user=request.user)
         if request.user.is_superuser:
             list_filter=['shift','area']
             return qs
-        return qs.filter(area=myuser.area)
+        else:
+            myuser=MyUser.objects.get(user=request.user)
+            return qs.filter(area=myuser.area)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
         if request.user.is_superuser:
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
         else:   
@@ -172,14 +195,17 @@ class FeeAdmin(admin.ModelAdmin): # Danh sách thu học phí theo biên lai
     search_fields=['receipt_number','student__name','payment_date'] # Gọi API ['(foreign_key)__(related_fieldname)'] thực tế là ['foreign_key__related_fieldname']
     
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        myuser=MyUser.objects.get(user=request.user)
+        """ Lọc toàn bộ obj theo area của user """
+        qs = super().get_queryset(request)    
         #class_id=Classes.objects.get(self)
         if request.user.is_superuser:
             return qs
-        return qs.filter(class_id__area = myuser.area)
+        else:
+            myuser=MyUser.objects.get(user=request.user)
+            return qs.filter(class_id__area = myuser.area)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
         if request.user.is_superuser:
             return super().formfield_for_foreignkey(db_field, request, **kwargs)
         else:   

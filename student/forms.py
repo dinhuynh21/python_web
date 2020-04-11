@@ -15,6 +15,7 @@ class CreationForm(forms.ModelForm):
     #             raise forms.ValidationError("Số điện thoại có kí tự đặc biệt")
     #         return Student.phone_number_1
     # def save(self,commit=True):
+    """ Không hiểu sao khi add đoạn này vào thì nó sai nên để thế này luôn """
     #     student = super().save(commit=False)
     #     student.name = self.name
     #     student.phone_number_1 = self.phone_number_1

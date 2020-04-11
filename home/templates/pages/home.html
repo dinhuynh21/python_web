@@ -15,7 +15,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="keywords" content="Child Learn Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, 
 	Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
-	<title>Child Learn Education</title>
+	<title>Child Learning Education</title>
     <script>
         addEventListener("load", function () {
             setTimeout(hideURLbar, 0);
@@ -69,8 +69,13 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 					<span class="fa fa-clock-o"></span> Tue-Sun : 8:00 am to 19:00 pm</li>
 				<li>
 					<span class="fa fa-envelope-open"></span> <a href="mailto:info@example.com">dinhhuynh21@gmail.com </a> </li>
-				<li>
-					<span class="fa fa-envelope-square"></span><a href="/login">Signin</a>|<a href="/register">Register</a>
+				<li style="color:MediumSeaGreen;">
+					{% if user.username %}
+						<label> Welcome {{user.username}}</label><a href="{% url 'logout' %}"> | Đăng xuất</p>
+					{% else %}
+						<p ><a href="{% url 'register' %}" style="color:MediumSeaGreen;"> Register</a> | 
+						<a href="{% url 'login' %}" style="color:MediumSeaGreen;">Log in</a></p>
+					{% endif %}
 				</li>
 			</ul>
 			

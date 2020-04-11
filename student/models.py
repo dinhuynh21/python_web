@@ -51,6 +51,7 @@ class Book(models.Model):
 class SystemLevel(models.Model):
     name=models.CharField(max_length=100)
     book=models.ForeignKey(Book,on_delete=models.CASCADE,related_name='books')
+    area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
     fee = models.IntegerField(default=0)
     note = models.TextField(max_length=200,default='',blank=True)
 
