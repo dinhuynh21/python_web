@@ -5,17 +5,17 @@
 {% block content %}
     <div>
         <h5><label>Họ và tên: {{student.name}}</label></h5>
-        <h5><label>Ngày sinh: {{student.birtday}}</label></h5>
+        <h5><label>Ngày sinh: {{student.birtdate}}</label></h5>
         <h5><label>Địa chỉ: {{student.address}}</label></h5>
-        <h5><label>SĐT 1: {{student.phonenum1}}</label></h5>
+        <h5><label>SĐT 1: {{student.phone_number_1}}</label></h5>
     </div>
-{% if student.phonenum2 %}
-    <h5><label>SĐT 2: {{student.phonenum2}}</label></h5>
+{% if student.phone_number_2 %}
+    <h5><label>SĐT 2: {{student.phone_number_2}}</label></h5>
 {% else %}
     <h5><label>SĐT 2: Không tồn tại</label></h5>
 {% endif %}
 
-
+    <div><label>Khu vực: {{student.learning_area}}</label></div>
 {% if student.identityCard == 0 %}
     <h5><label>CMND: {{student.identityCard}}</label></h5>
 {% else %}
@@ -28,6 +28,6 @@
 {% endif %}
     <h5><label>Chú thích: {{student.note}}</label></h5>
     <form>
-    {{form.systemlevel}}
+    {{form.classid}}
     </form>
 {% endblock content %}
