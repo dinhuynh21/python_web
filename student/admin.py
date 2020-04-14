@@ -49,9 +49,10 @@ class FeeInLine(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
-        if db_field.name == "class_id":
-            user = MyUser.objects.get(user=request.user)
-            kwargs["queryset"]= Classes.objects.filter(area=user.area)
+        if request.user.is_superuser == False:
+            if db_field.name == "class_id":
+                user = MyUser.objects.get(user=request.user)
+                kwargs["queryset"]= Classes.objects.filter(area=user.area)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 class StudentAdmin(admin.ModelAdmin): # danh sách học sính
     list_display=['name', 'phone_number_1','joined_date'] # danh sách hiển thị, có thể nhóm các thuộc tính 
