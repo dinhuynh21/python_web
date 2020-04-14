@@ -20,14 +20,12 @@ class StudentInLine(admin.TabularInline):
         return extra
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """ Hiển thị các đối tượng có tên bên dưới (foreign key) theo area của user """
-        user=MyUser.objects.get(user=request.user) # Lấy MyUser theo user đang có
-        if db_field.name == "class_id":  #dòng này có vấn đề
-            #Có lỗi nhưng nó vẫn chạy tốt :V méo hiểu kệ nó 
-            # Fix 1: Import thêm pylint vào project sau đó vào settings.json(Python) import thêm 1 đoạn code gọi plugin pylint là dc 
-            # Lọc theo khu vực của User
-            kwargs["queryset"] = Classes.objects.filter(area=user.area) # Student.objects.filler() thì k sao vì model có Manage()
-        if db_field.name=="student":
-            kwargs["queryset"] = Student.objects.filter(learning_area=user.area)
+        if request.user.is_superuser == False:
+            user=MyUser.objects.get(user=request.user) # Lấy MyUser theo user đang có
+            if db_field.name == "class_id":
+                kwargs["queryset"] = Classes.objects.filter(area=user.area)
+            if db_field.name=="student":
+                kwargs["queryset"] = Student.objects.filter(learning_area=user.area)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 # More infomation to User in admin
