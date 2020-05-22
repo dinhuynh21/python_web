@@ -1,11 +1,10 @@
 from django.contrib import admin
 from .models import Student,Area,Book,SystemLevel,CambridgeLevel,Teacher,Classes,StudentInClass,Fee,MyUser
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .forms import CreationForm
 from django.contrib.auth.models import User
 
-from django.utils.html import format_html_join
-from django.utils.safestring import mark_safe
+# from django.utils.html import format_html_join
+# from django.utils.safestring import mark_safe
 # Register your models here.
 class StudentInLine(admin.TabularInline):
     model=StudentInClass # model hỗ trợ
@@ -27,6 +26,9 @@ class StudentInLine(admin.TabularInline):
             if db_field.name=="student":
                 kwargs["queryset"] = Student.objects.filter(learning_area=user.area)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+
 
 # More infomation to User in admin
 class MyUserInline(admin.StackedInline):
@@ -55,12 +57,13 @@ class FeeInLine(admin.TabularInline):
                 kwargs["queryset"]= Classes.objects.filter(area=user.area)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 class StudentAdmin(admin.ModelAdmin): # danh sách học sính
-    list_display=['name', 'phone_number_1','joined_date'] # danh sách hiển thị, có thể nhóm các thuộc tính 
+    list_display=['name','birtdate','address', 'phone_number_1','phone_number_2','identity_number','learning_area','joined_date','note','is_learning'] # danh sách hiển thị, có thể nhóm các thuộc tính 
     search_fields=['name','phone_number_1'] # Thanh tìm kiếm ['foreign_key__related_fieldname']
     #fields= [('birtdate','address')] # chọn trường hiển thị và gộp nhóm (fail)
     #list_filter=[('learning_area', admin.RelatedOnlyFieldListFilter)]# phần màu cam là lọc theo 'tên_thuộc_tính', phần màu trắng thì k rõ :V
     list_per_page = 30
     ordering = ['name'] # sắp xếp
+    actions = ['get_student_NOT_payment_fee']
     #paginator= 15
 
     inlines=[StudentInLine,FeeInLine] # Thêm 1 inline obj
@@ -99,6 +102,10 @@ class StudentAdmin(admin.ModelAdmin): # danh sách học sính
     #         ((line,) for line in instance.get_full_address()),
     #     ) or mark_safe("<span class='errors'>I can't determine this address.</span>")
     # address_report.short_description = "Address 1111" # phương thức hiển thị
+    def get_student_NOT_payment_fee(self, request, queryset):
+        """ Action get all student NOT pay for fee """
+        row_update = queryset.update(name='p')
+    get_student_NOT_payment_fee.short_description = "Lọc toàn bộ học sinh chưa đóng học phí"
 
     def upper_case_name(self,obj): # gọi vào list_display và hiển thị nó như các obj bình thường
         return ("%s %s" %(obj.name,obj.phone_number_1)).upper() # hiện tại không dùng tới
@@ -191,6 +198,7 @@ class CambridgeLevelAdmin(admin.ModelAdmin):# Danh sách Level Cambridge
 class FeeAdmin(admin.ModelAdmin): # Danh sách thu học phí theo biên lai
     list_display=['student','class_id','receipt_number','fee']
     app_label="học phí"
+    list_filter = ['payment_date']
     search_fields=['receipt_number','student__name','payment_date'] # Gọi API ['(foreign_key)__(related_fieldname)'] thực tế là ['foreign_key__related_fieldname']
     
     def get_queryset(self, request):
