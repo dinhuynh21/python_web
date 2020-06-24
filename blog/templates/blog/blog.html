@@ -9,6 +9,6 @@
 {% endfor %}
 <br/>
 {% if page_obj.has_next %}
-<a href="{{request.path}}?page={{page_obj.next_page_number}}">TIếp theo</a>
+    <a href="{{request.path}}?page={{page_obj.next_page_number}}">TIếp theo</a>
 {% endif %}
 {% endblock content %}

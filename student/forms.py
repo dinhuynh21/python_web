@@ -1,19 +1,24 @@
 from django import forms
 import re
-from .models import Student,Class,StudentInClass
+from .models import Student,StudentInClass
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField()
+
 class CreationForm(forms.ModelForm):
-    #name =forms.CharField(label='',widget=forms.TextInput(attrs={"placeholder":"Tên học sinh "}))
-    #birtday=forms.DateField(widget=forms.DateInput(attrs={"placeholder":"Ngày sinh"}))
+    def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('name',None)
+        self.phone_number_1 = kwargs.pop('phonenum1',None)
+        self.learning_area = kwargs.get('area',None)
+        super().__init__(*args, **kwargs)
     class Meta:
         model = Student
         Student.is_learning=False
-        fields = ["name","birtdate","address","phone_number_1"]
-    def clean_phonenumber(self):
-        if 'Student.phonenum1' in self.cleaned_data:
-            if not re.search(r'^\w+$', Student.phone_number_1):
-                raise forms.ValidationError("Số điện thoại có kí tự đặc biệt")
-            return Student.phone_number_1
+        fields = ["name","phone_number_1","learning_area"]
+    
 class TimeStudentForm(forms.ModelForm):
     class Meta:
         model = StudentInClass
         fields = ["class_id"]
+
+
