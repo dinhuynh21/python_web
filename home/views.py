@@ -27,7 +27,7 @@ def index(request):
 def contact(request):
     return render(request, 'pages/contact.html')
 def error(request):
-    return render(request,'pages/error.html')
+    return render(request, 'pages/error.html')
 def register(request):
     form = RegistrationForm()
     if request.method == 'POST':
