@@ -4,8 +4,6 @@ from .models import Student,StudentInClass
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
-    # def clean_file(self):
-    #     if self.file
 
 class CreationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

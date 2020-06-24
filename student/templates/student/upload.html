@@ -8,6 +8,12 @@
             {% csrf_token %}
             <div class="container-fluid" style="background: white;">
                 {{form.as_p}}
+                <select name="model">
+                    <option value="Student">Student</option>
+                    <option value="Class">Class</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Level">Level</option>
+                </select>
             </div>      
             <input type="submit" value="Đăng kí"/>
         </form>

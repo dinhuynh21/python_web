@@ -6,7 +6,7 @@ urlpatterns = [
     #path('<int:pk>/',views.StudentDetailView.as_view(), name='detailstudent'),
     path('<int:pk>/',views.DetailStudent,name='detailstudent'),
     path('create/',views.CreateStudent,name='create'),
-    path('upload/',views.upload_file,name='upload'),
+    path('upload/',views.upload_file_student,name='upload'),
     path('base2/',views.test, name='test'),
 
 ]

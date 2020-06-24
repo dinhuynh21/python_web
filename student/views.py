@@ -29,9 +29,10 @@ def CreateStudent(request):
         return HttpResponse("Dữ liệu không hợp lệ")
     return render(request, 'student/createStudent.html', {'form':form})
               
-def upload_file(request):
+def upload_file_student(request):
     if request.method == 'POST' and request.user.is_staff == True and request.user.is_superuser == False:
         form = UploadFileForm(request.POST, request.FILES)
+
         if form.is_valid():
             excel_file = request.FILES['file']
 
@@ -50,11 +51,13 @@ def upload_file(request):
                 row_data = list()
                 for cell in row:
                     row_data.append(str(cell.value))
-                Student.objects.create(name=row_data[0],phone_number_1=row_data[1],learning_area=user.area)
+                Student.objects.create(name=row_data[0],phone_number_1=row_data[1],email=row_data[2],learning_area=user.area)
             return render(request, 'pages/Success.html',{"excel_data":excel_data})
         else:
+            print('Invalid')
             return HttpResponseBadRequest()
     else:
+        print('Upload file thành công')
         form = UploadFileForm()
     return render(request, 'student/upload.html', {'form': form})
 

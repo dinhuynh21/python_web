@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Student,Area,Book,SystemLevel,CambridgeLevel,Teacher,Classes,StudentInClass,Fee,MyUser
+from student.forms import UploadFileForm
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
@@ -63,7 +64,7 @@ class StudentAdmin(admin.ModelAdmin): # danh sách học sính
     #list_filter=[('learning_area', admin.RelatedOnlyFieldListFilter)]# phần màu cam là lọc theo 'tên_thuộc_tính', phần màu trắng thì k rõ :V
     list_per_page = 30
     ordering = ['name'] # sắp xếp
-    actions = ['get_student_NOT_payment_fee']
+    #actions = ['get_student_NOT_payment_fee']
     #paginator= 15
 
     inlines=[StudentInLine,FeeInLine] # Thêm 1 inline obj
@@ -101,11 +102,7 @@ class StudentAdmin(admin.ModelAdmin): # danh sách học sính
     #         '{}',
     #         ((line,) for line in instance.get_full_address()),
     #     ) or mark_safe("<span class='errors'>I can't determine this address.</span>")
-    # address_report.short_description = "Address 1111" # phương thức hiển thị
-    def get_student_NOT_payment_fee(self, request, queryset):
-        """ Action get all student NOT pay for fee """
-        row_update = queryset.update(name='p')
-    get_student_NOT_payment_fee.short_description = "Lọc toàn bộ học sinh chưa đóng học phí"
+    # address_report.short_description = "Address 1111" # phương thức hiển thị  
 
     def upper_case_name(self,obj): # gọi vào list_display và hiển thị nó như các obj bình thường
         return ("%s %s" %(obj.name,obj.phone_number_1)).upper() # hiện tại không dùng tới
