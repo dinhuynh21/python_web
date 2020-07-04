@@ -58,10 +58,10 @@ class FeeInLine(admin.TabularInline):
                 kwargs["queryset"]= Classes.objects.filter(area=user.area)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 class StudentAdmin(admin.ModelAdmin): # danh sách học sính
-    list_display=['name','birtdate','address', 'phone_number_1','phone_number_2','identity_number','learning_area','joined_date','note','is_learning'] # danh sách hiển thị, có thể nhóm các thuộc tính 
-    search_fields=['name','phone_number_1'] # Thanh tìm kiếm ['foreign_key__related_fieldname']
-    #fields= [('birtdate','address')] # chọn trường hiển thị và gộp nhóm (fail)
-    #list_filter=[('learning_area', admin.RelatedOnlyFieldListFilter)]# phần màu cam là lọc theo 'tên_thuộc_tính', phần màu trắng thì k rõ :V
+    list_display=['name','phone_number_1','email','learning_area','joined_date','is_learning'] # danh sách hiển thị bên ngoài
+    search_fields=['name','phone_number_1','email'] # Thanh tìm kiếm ['foreign_key__related_fieldname']
+    fields= [('name','phone_number_1','learning_area'),'birtdate',('email','phone_number_2','identity_number'),'address','is_learning'] # chọn trường hiển thị và gộp nhóm (fail)
+    #list_filter=['learning_area']#, admin.RelatedOnlyFieldListFilter)]# phần màu cam là lọc theo 'tên_thuộc_tính', phần màu trắng thì k rõ :V
     list_per_page = 30
     ordering = ['name'] # sắp xếp
     #actions = ['get_student_NOT_payment_fee']

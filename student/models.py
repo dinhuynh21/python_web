@@ -32,7 +32,7 @@ class Student(models.Model):
     email = models.EmailField(verbose_name="email",blank=True)
     identity_number = models.CharField(max_length=10,default='',null=True,blank=True, verbose_name="CMND / CMT")
     learning_area = models.ForeignKey(Area,on_delete=models.DO_NOTHING,related_name='learning_area')
-    is_learning = models.BooleanField(default=True, verbose_name="Còn học ?")  #True = đang học, False=Khác
+    is_learning = models.BooleanField(default=True, verbose_name="Đang học ?")  #True = đang học, False=Khác
     joined_date = models.DateField(auto_now_add=True,verbose_name="Ngày vào học")
     note = models.TextField(max_length=200,null=True,blank=True,verbose_name="Chú thích")
 
@@ -85,7 +85,7 @@ class Teacher(models.Model):
     name = models.CharField(max_length=100, verbose_name="Tên giáo viên")
     is_male = models.BooleanField(default=False, verbose_name="Giới tính") # False = nữ , True =nam
     area = models.ForeignKey(Area,on_delete=models.DO_NOTHING,related_name='area')
-    birthdate = models.DateField(null=False, verbose_name="Giới tính")
+    birthdate = models.DateField(null=False, verbose_name="Ngày sinh")
     address= models.TextField(max_length=100,default='',blank=True, verbose_name="Địa chỉ")
     phone_number = models.CharField(default='',max_length=12, verbose_name="Số điện thoại")
     email = models.EmailField(verbose_name="email")

@@ -1,6 +1,6 @@
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponse
-from student.models import Student,Classes,StudentInClass,MyUser
+from student.models import Student,Classes,StudentInClass,MyUser,Book,SystemLevel,CambridgeLevel,Teacher
 from .forms import CreationForm,TimeStudentForm,UploadFileForm
 from django.views.generic import ListView, DetailView
 import openpyxl
@@ -47,17 +47,41 @@ def upload_file_student(request):
             # iterating over the rows and
             # getting value from each cell in row
             user = MyUser.objects.get(user=request.user)
+            #print(request.POST['model'])
+            
+            model = eval(request.POST['model'])
+            print(str(model))
             for row in worksheet.iter_rows():
                 row_data = list()
                 for cell in row:
-                    row_data.append(str(cell.value))
-                Student.objects.create(name=row_data[0],phone_number_1=row_data[1],email=row_data[2],learning_area=user.area)
+                    row_data.append(str(cell.value))                          
+                if request.POST['model'] == 'Student':            
+                    model.objects.create(name=row_data[0],phone_number_1=row_data[1],email=row_data[2],learning_area=user.area)       
+                    print("Thêm học sinh:",row_data[0])
+                if request.POST['model'] == 'Book':                   
+                    model.objects.create(name=row_data[0],fee=row_data[1])
+                    print("Thêm Sách:",row_data[0])
+                if request.POST['model'] == 'Teacher':
+                    print('aa') 
+                    if row_data[1] == 'Nữ' or row_data[1] == 'nữ':
+                        gt = False    
+                    else:
+                        gt = True            
+                    model.objects.create(name=row_data[0],is_male=gt,birthdate=row_data[1],phone_number=row_data[2],email=row_data[3],identity_number=row_data[4],area=user.area)
+                    print("Thêm Giáo viên:",row_data[0])
+                if request.POST['model'] == 'SystemLevel':     
+                    book = Book.objects.get(name=row_data[3])            
+                    model.objects.create(name=row_data[0],book = book,area=user.area,fee=row_data[4],note=row_data[1])
+                    print("Thêm Level:",row_data[0])
+                if request.POST['model'] == 'CambridgeLevel':                   
+                    model.objects.create(name=row_data[0],fee=row_data[1])
+                    print("Thêm CambridgeLevel:",row_data[0])
+                #Student.objects.create(name=row_data[0],phone_number_1=row_data[1],email=row_data[2],learning_area=user.area)
             return render(request, 'pages/Success.html',{"excel_data":excel_data})
         else:
             print('Invalid')
             return HttpResponseBadRequest()
     else:
-        print('Upload file thành công')
         form = UploadFileForm()
     return render(request, 'student/upload.html', {'form': form})
 
