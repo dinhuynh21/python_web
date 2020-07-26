@@ -59,19 +59,30 @@ def upload_file_student(request):
                     model.objects.create(name=row_data[0],phone_number_1=row_data[1],email=row_data[2],learning_area=user.area)       
                     print("Thêm học sinh:",row_data[0])
                 if request.POST['model'] == 'Book':                   
-                    model.objects.create(name=row_data[0],fee=row_data[1])
+                    model.objects.create(name=row_data[0],fee=row_data[1],fee_photo = row_data[2])
                     print("Thêm Sách:",row_data[0])
                 if request.POST['model'] == 'Teacher':
-                    print('aa') 
-                    if row_data[1] == 'Nữ' or row_data[1] == 'nữ':
+                    date = row_data[1]
+                    if date == 'None':
+                        date = "2000-01-01"
+                    else:
+                        date = date[0:10]
+                    #print(date)
+                    if row_data[6] == 'Nữ' or row_data[6] == 'nữ':
                         gt = False    
                     else:
-                        gt = True            
-                    model.objects.create(name=row_data[0],is_male=gt,birthdate=row_data[1],phone_number=row_data[2],email=row_data[3],identity_number=row_data[4],area=user.area)
-                    print("Thêm Giáo viên:",row_data[0])
+                        gt = True 
+                    try:
+                        teacher=Teacher.objects.get(email=row_data[3])
+                        print(teacher)
+                        #model.objects.create(name=row_data[0],is_male=gt,birthdate=date,phone_number=row_data[2],email=row_data[3],identity_number=row_data[4],salary=row_data[5],area=user.area)
+                    except:
+                        print("Chưa có giáo viên -> Adding giáo viên")
+                        #model.objects.create(name=row_data[0],is_male=gt,birthdate=date,phone_number=row_data[2],email=row_data[3],identity_number=row_data[4],salary=row_data[5],area=user.area)
+                        print("Thêm Giáo viên:",row_data[0])
                 if request.POST['model'] == 'SystemLevel':     
                     book = Book.objects.get(name=row_data[3])            
-                    model.objects.create(name=row_data[0],book = book,area=user.area,fee=row_data[4],note=row_data[1])
+                    model.objects.create(name=row_data[0],book = book,area=user.area,note=row_data[1],fee=row_data[4],certificate = row_data[5])
                     print("Thêm Level:",row_data[0])
                 if request.POST['model'] == 'CambridgeLevel':                   
                     model.objects.create(name=row_data[0],fee=row_data[1])

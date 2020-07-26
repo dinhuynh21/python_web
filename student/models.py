@@ -49,7 +49,8 @@ class Student(models.Model):
 
 class Book(models.Model):
     name=models.CharField(max_length=100,verbose_name="Tên sách")
-    fee=models.IntegerField(default=0, verbose_name="Phí sách")
+    fee=models.IntegerField(default=0, verbose_name="Phí sách GỐC")
+    fee_photo = models.TextField(verbose_name="Phí sách photo",default="")
     note=models.TextField(max_length=200,null=True,blank=True, verbose_name="Chú thích")
 
     def __str__(self):
@@ -61,9 +62,11 @@ class Book(models.Model):
 class SystemLevel(models.Model):
     name=models.CharField(max_length=100, verbose_name="Cấp độ")
     book=models.ForeignKey(Book,on_delete=models.CASCADE,related_name='books')
+    book_description = models.TextField(verbose_name="Mô tả sách",blank=True)
     area = models.ForeignKey(Area, on_delete=models.DO_NOTHING)
     fee = models.IntegerField(default=0, verbose_name="Học phí")
-    note = models.TextField(max_length=200,default='',blank=True, verbose_name="Chú thích")
+    certificate = models.TextField(verbose_name="Chứng chỉ",max_length=5,default="")
+    note = models.TextField(max_length=200,default='',blank=True, verbose_name="Mô tả")
 
     def __str__(self):
         return self.name
@@ -83,9 +86,10 @@ class CambridgeLevel(models.Model):
 
 class Teacher(models.Model):
     name = models.CharField(max_length=100, verbose_name="Tên giáo viên")
-    is_male = models.BooleanField(default=False, verbose_name="Giới tính") # False = nữ , True =nam
+    is_male = models.BooleanField(default=False, verbose_name="Giới tính: Nam") # False = nữ , True =nam
     area = models.ForeignKey(Area,on_delete=models.DO_NOTHING,related_name='area')
     birthdate = models.DateField(null=False, verbose_name="Ngày sinh")
+    salary = models.IntegerField(verbose_name="Lương cơ bản",default=60000)
     address= models.TextField(max_length=100,default='',blank=True, verbose_name="Địa chỉ")
     phone_number = models.CharField(default='',max_length=12, verbose_name="Số điện thoại")
     email = models.EmailField(verbose_name="email")
